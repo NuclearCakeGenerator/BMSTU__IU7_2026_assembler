@@ -7,7 +7,7 @@ LDFLAGS =
 # Get all .asm files and define their resulting binary names
 SRCS = $(wildcard *.asm)
 OBJS = $(SRCS:.asm=.o)
-APP = app
+APP = app.exe
 
 # Default target: build all
 all: $(APP)
