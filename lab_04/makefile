@@ -6,13 +6,14 @@ LDFLAGS =
 
 # Get all .asm files and define their resulting binary names
 SRCS = $(wildcard *.asm)
-BINS = $(SRCS:.asm=)
+OBJS = $(SRCS:.asm=.o)
+APP = app
 
 # Default target: build all
-all: $(BINS)
+all: $(APP)
 
 # Rule to link the object file into an executable
-%: %.o
+$(APP): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $<
 
 # Rule to assemble .asm into .o
@@ -21,6 +22,6 @@ all: $(BINS)
 
 # Clean up
 clean:
-	rm -f *.o $(BINS)
+	rm -f *.o $(OBJS) $(APP)
 
 .PHONY: all clean
