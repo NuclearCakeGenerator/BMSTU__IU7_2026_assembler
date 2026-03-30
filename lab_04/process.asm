@@ -5,6 +5,7 @@ global SYS_EXIT
 global SYS_READ
 global STDIN
 global STDOUT
+global NEW_LINE
 
 extern MAX_HEIGHT
 extern MAX_WIDTH
@@ -32,16 +33,18 @@ print_matrix:
 
     mov r12, 0 ; current row index = 0
 print_matrix_row_loop:
-    cmp r12, byte [height]
+    cmp r12b, byte [height]
     jge exit_print_matrix_row_loop
 
     mov r13, 0 ; current column index = 0
 print_matrix_column_loop:
-    cmp r13,  byte [width]
+    cmp r13b, byte [width]
     jge exit_print_matrix_column_loop
 
-    mov al, [matrix + r12 * MAX_WIDTH + r13] ; load matrix[r12][r13] into rax
-    add, al, ZERO_CODE
+    mov r8, r12
+    imul r8, MAX_WIDTH
+    mov al, [matrix + r8 + r13] ; load matrix[r12][r13] into rax
+    add al, ZERO_CODE
     push rax  ; push the character to print onto the stack
 
     ; print matrix[r12][r13]
@@ -110,20 +113,22 @@ delete_column:
     mov rax, 0
                                                     ;     while (current_row_index < height)
 delete_column_row_loop:
-    cmp rax, byte [height]
+    cmp al, byte [height]
     jge exit_delete_column_row_loop
                                                     ;     {
                                                     ;         current_column_index = least_column_index // in rcx
     mov rcx, rdi
                                                     ;         while (current_column_index + 1 < width)
 delete_column_column_loop:
-    cmp rcx, byte [width]
+    cmp cl, byte [width]
     jge exit_delete_column_column_loop
                                                     ;         {
                                                     ;             t = matrix[current_row_index][current_column_index + 1] // in rdx
-    mov rdx, [matrix + rax * MAX_WIDTH + rcx + 1]
+    mov r8, rax
+    imul r8, MAX_WIDTH
+    mov rdx, [matrix + r8 + rcx + 1]
                                                     ;             matrix[current_row_index][current_column_index] = t
-    mov [matrix + rax * MAX_WIDTH + rcx], rdx
+    mov [matrix + r8 + rcx], rdx
                                                     ;             current_column_index++
     inc rcx
     jmp delete_column_column_loop
@@ -150,10 +155,12 @@ find_column_sum:
 
     mov rcx, 0 ; row index = 0
 find_column_sum_row_loop:
-    cmp rcx, byte [height]
+    cmp cl, byte [height]
     jge exit_find_column_sum_row_loop
 
-    add rax, [matrix + MAX_WIDTH * rcx + rdi] ; sum += matrix[row][column_index]
+    mov r8, rcx
+    imul r8, MAX_WIDTH
+    add rax, [matrix + r8 + rdi] ; sum += matrix[row][column_index]
     inc rcx
     jmp find_column_sum_row_loop
 exit_find_column_sum_row_loop:
@@ -178,7 +185,7 @@ find_least_column:
     mov rdx, 1
                                                     ;     while (column_index < width)
 find_least_column_loop:
-    cmp rdx, byte [width]
+    cmp dl, byte [width]
     jge exit_find_least_column_loop
                                                     ;     {
                                                     ;         int rax = find_column_sum(column_index)
