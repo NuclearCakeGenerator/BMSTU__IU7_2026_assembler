@@ -148,7 +148,7 @@ find_column_sum_row_loop:
 
     mov r8, rcx
     imul r8, MAX_WIDTH
-    add rax, [matrix + r8 + rdi] ; sum += matrix[row][column_index]
+    add al, [matrix + r8 + rdi] ; sum += matrix[row][column_index]
     inc rcx
     jmp find_column_sum_row_loop
 exit_find_column_sum_row_loop:
@@ -176,23 +176,24 @@ find_least_column_loop:
     cmp dl, byte [width]
     jge exit_find_least_column_loop
                                                     ;     {
-                                                    ;         int rax = find_column_sum(column_index)
+                                                    ;         int rsi = find_column_sum(column_index) // in rsi
     push rax  ; save rax before call
     push rcx  ; save rcx before call
     push rdx  ; save rdx before call
 
     mov rdi, rdx
     call find_column_sum
+    mov rsi, rax
 
     pop rdx  ; restore rdx after call
     pop rcx  ; restore rcx after call
     pop rax  ; restore rax after call
-                                                    ;         if (rax < least_sum)
-    cmp rax, rcx
+                                                    ;         if (rsi < least_sum)
+    cmp rsi, rcx
     jge skip_update_least_column
                                                     ;         {
-                                                    ;             least_sum = rax;
-    mov rcx, rax
+                                                    ;             least_sum = rsi;
+    mov rcx, rsi
                                                     ;             least_column_index = column_index;
     mov rax, rdx
                                                     ;         }
