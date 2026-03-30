@@ -1,0 +1,21 @@
+Enter height and width on each line (max 9 each):
+5
+4
+Enter matrix line by line (each line should have <width> number of digits with no spaces):
+2459
+4235
+7706
+9514
+1284
+Inital matrix:
+2 4 5 9 
+4 2 3 5 
+7 7 0 6 
+9 5 1 4 
+1 2 8 4 
+Matrix after deleting column:
+2 4 9 
+4 2 5 
+7 7 6 
+9 5 4 
+1 2 4 
