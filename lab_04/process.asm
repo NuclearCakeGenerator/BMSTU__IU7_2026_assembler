@@ -1,3 +1,11 @@
+global process_matrix
+global print_matrix
+global SYS_WRITE
+global SYS_EXIT
+global SYS_READ
+global STDIN
+global STDOUT
+
 extern MAX_HEIGHT
 extern MAX_WIDTH
 extern ZERO_CODE
@@ -16,12 +24,11 @@ extern height
 extern width
 
 section .text
-    global process_matrix
-    global print_matrix
-
 print_matrix:
-    push rbp  ; save the base pointer for caller
-    mov rbp, rsp    ; set the base pointer to the current stack pointer
+    ; push rbp  ; save the base pointer for caller
+    ; mov rbp, rsp    ; set the base pointer to the current stack pointer
+    push r12
+    push r13
 
     mov r12, 0 ; current row index = 0
 print_matrix_row_loop:
@@ -73,7 +80,9 @@ exit_print_matrix_column_loop:
     jmp print_matrix_row_loop
 exit_print_matrix_row_loop:
 
-    pop rbp  ; restore the base pointer for caller
+    ; pop rbp  ; restore the base pointer for caller
+    pop r13
+    pop r12
     ret
 end_print_matrix:
 ; just for readability

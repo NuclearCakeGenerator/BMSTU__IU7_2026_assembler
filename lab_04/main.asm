@@ -1,12 +1,25 @@
 global MAX_HEIGHT
 global MAX_WIDTH
 global ZERO_CODE
+global _start
+global matrix
+global height
+global width
+
+extern print_matrix
+extern process_matrix
+extern SYS_WRITE
+extern SYS_EXIT
+extern SYS_READ
+extern STDIN
+extern STDOUT
 
 MAX_HEIGHT EQU 9
 MAX_WIDTH  EQU 9
 ZERO_CODE EQU '0'
 
 section .data
+
     matrix db MAX_HEIGHT * MAX_WIDTH dup(0)
     height db 0
     width db 0
@@ -21,18 +34,15 @@ section .data
     MSG_4_LEN EQU $ - msg4
 
 section .text
-    global _start
-    extern delete_column
-
 _start:
-    mov rax, 1
-    mov rdi, 1
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
     mov rsi, msg1
     mov rdx, MSG_1_LEN
     syscall
 
-    mov rax, 0
-    mov rdi, 0
+    mov rax, SYS_READ
+    mov rdi, STDIN
     mov rsi, read_buffer
     mov rdx, 2                                  ; Read height and '/n'.
     syscall
@@ -40,8 +50,8 @@ _start:
     sub al, ZERO_CODE
     mov [height], al
 
-    mov rax, 0
-    mov rdi, 0
+    mov rax, SYS_READ
+    mov rdi, STDIN
     mov rsi, read_buffer
     mov rdx, 2                                  ; Read width and '/n'.
     syscall
@@ -49,8 +59,8 @@ _start:
     sub al, ZERO_CODE
     mov [width], al
 
-    mov rax, 1
-    mov rdi, 1
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
     mov rsi, msg2
     mov rdx, MSG_2_LEN
     syscall
@@ -61,8 +71,8 @@ row_loop:
     cmp r12, r8
     jge exit_row_loop
 
-    mov rax, 0
-    mov rdi, 0
+    mov rax, SYS_READ
+    mov rdi, STDIN
     mov rsi, read_buffer
     movzx rdx, byte [width]
     inc rdx                                   ; Read width + '/n'.
@@ -91,7 +101,28 @@ exit_col_loop:
     jmp row_loop                              ; Continue processing matrix.
 
 exit_row_loop:
-    mov rax, 60                               ; Syscall: exit.
-    xor rdi, rdi                              ; Exit status = 0.
+
+                                                            ; printf(msg3)
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
+    mov rsi, msg3
+    mov rdx, MSG_3_LEN
+    syscall
+                                                            ; print_matrix()
+    call print_matrix
+                                                            ; process_matrix()
+    call process_matrix
+                                                            ; printf(msg4)
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
+    mov rsi, msg4
+    mov rdx, MSG_4_LEN
+    syscall
+                                                            ; print_matrix()
+    call print_matrix
+
+
+    mov rax, SYS_EXIT
+    mov rdi, 0                              ; Exit status = 0.
     syscall
 
