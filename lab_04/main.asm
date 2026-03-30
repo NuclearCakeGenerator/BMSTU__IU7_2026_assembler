@@ -4,11 +4,11 @@ global height
 global width
 
 extern process_matrix
+extern print_matrix
 
 %include "constants.inc"
 
 section .data
-
     matrix db MAX_HEIGHT * MAX_WIDTH dup(0)
     height db 0
     width db 0
@@ -23,8 +23,6 @@ section .data
     MSG_4_LEN EQU $ - msg4
 
 section .text
-extern print_matrix
-
 _start:
     mov rax, SYS_WRITE
     mov rdi, STDOUT
