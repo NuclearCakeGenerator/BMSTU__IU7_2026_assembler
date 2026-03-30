@@ -14,7 +14,7 @@ all: $(APP)
 
 # Rule to link the object file into an executable
 $(APP): $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $<
+	$(LD) $(LDFLAGS) -o $@ $^
 
 # Rule to assemble .asm into .o
 %.o: %.asm
