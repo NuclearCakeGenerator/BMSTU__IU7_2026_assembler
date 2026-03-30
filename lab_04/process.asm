@@ -104,7 +104,9 @@ delete_column_row_loop:
     mov rcx, rdi
                                                     ;         while (current_column_index + 1 < width)
 delete_column_column_loop:
-    cmp cl, byte [width]
+    mov r9, rcx
+    inc r9
+    cmp r9b, byte [width]
     jge exit_delete_column_column_loop
                                                     ;         {
                                                     ;             t = matrix[current_row_index][current_column_index + 1] // in rdx
