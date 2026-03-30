@@ -1,3 +1,7 @@
+global MAX_HEIGHT
+global MAX_WIDTH
+global ZERO_CODE
+
 MAX_HEIGHT EQU 9
 MAX_WIDTH  EQU 9
 ZERO_CODE EQU '0'
@@ -11,10 +15,14 @@ section .data
     read_buffer db MAX_WIDTH + 2 dup(0)
     msg2 db "Enter matrix line by line (each line should have <width> number of digits with no spaces):", 10
     MSG_2_LEN EQU $ - msg2
-
+    msg3 db "Inital matrix:", NEW_LINE
+    MSG_3_LEN EQU $ - msg3
+    msg4 db "Matrix after deleting column:", NEW_LINE
+    MSG_4_LEN EQU $ - msg4
 
 section .text
     global _start
+    extern delete_column
 
 _start:
     mov rax, 1
