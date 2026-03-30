@@ -109,12 +109,12 @@ delete_column_column_loop:
     cmp r9b, byte [width]
     jge exit_delete_column_column_loop
                                                     ;         {
-                                                    ;             t = matrix[current_row_index][current_column_index + 1] // in rdx
+                                                    ;             t = matrix[current_row_index][current_column_index + 1] // in dl
     mov r8, rax
     imul r8, MAX_WIDTH
-    mov rdx, [matrix + r8 + rcx + 1]
+    mov dl, [matrix + r8 + rcx + 1]
                                                     ;             matrix[current_row_index][current_column_index] = t
-    mov [matrix + r8 + rcx], rdx
+    mov [matrix + r8 + rcx], dl
                                                     ;             current_column_index++
     inc rcx
     jmp delete_column_column_loop
@@ -125,6 +125,8 @@ exit_delete_column_column_loop:
     jmp delete_column_row_loop
                                                     ;     }
 exit_delete_column_row_loop:
+                                                    ;     width--;
+    dec byte [width]
                                                     ;     return
     ret
                                                     ; }
