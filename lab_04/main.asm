@@ -1,22 +1,11 @@
-global MAX_HEIGHT
-global MAX_WIDTH
-global ZERO_CODE
 global _start
 global matrix
 global height
 global width
 
-extern print_matrix
 extern process_matrix
-extern SYS_WRITE
-extern SYS_EXIT
-extern SYS_READ
-extern STDIN
-extern STDOUT
 
-MAX_HEIGHT EQU 9
-MAX_WIDTH  EQU 9
-ZERO_CODE EQU '0'
+%include "constants.inc"
 
 section .data
 
@@ -34,6 +23,8 @@ section .data
     MSG_4_LEN EQU $ - msg4
 
 section .text
+extern print_matrix
+
 _start:
     mov rax, SYS_WRITE
     mov rdi, STDOUT

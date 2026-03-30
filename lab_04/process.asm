@@ -1,23 +1,7 @@
 global process_matrix
 global print_matrix
-global SYS_WRITE
-global SYS_EXIT
-global SYS_READ
-global STDIN
-global STDOUT
-global NEW_LINE
 
-extern MAX_HEIGHT
-extern MAX_WIDTH
-extern ZERO_CODE
-
-SPACE_CHAR EQU ' '
-NEW_LINE EQU 10
-SYS_WRITE EQU 1
-SYS_EXIT  EQU 60
-SYS_READ  EQU 0
-STDIN     EQU 0
-STDOUT    EQU 1
+%include "constants.inc"
 
 section .data
 extern matrix
