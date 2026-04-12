@@ -1,3 +1,1 @@
 ENDL equ 10
-
-SYS_WRITE
