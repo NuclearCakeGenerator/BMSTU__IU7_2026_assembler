@@ -1,1 +1,0 @@
-ENDL equ 10
