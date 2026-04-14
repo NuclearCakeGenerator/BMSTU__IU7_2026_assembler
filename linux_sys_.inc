@@ -10,3 +10,19 @@ STDOUT    EQU 1
     mov rdi, %1
     syscall
 %endmacro
+
+%macro print_string 2
+    mov rax, SYS_WRITE
+    mov rdi, STDOUT
+    mov rsi, %1
+    mov rdx, %2
+    syscall
+%endmacro
+
+%macro read_string 2
+    mov rax, SYS_READ
+    mov rdi, STDIN
+    mov rsi, %1
+    mov rdx, %2
+    syscall
+%endmacro
