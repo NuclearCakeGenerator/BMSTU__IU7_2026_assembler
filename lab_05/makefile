@@ -1,8 +1,9 @@
 # Variables
 AS = nasm
-ASFLAGS = -f elf64 -g -F dwarf  # -g and -F dwarf are for debugging
+ASFLAGS = -f elf64 -g -F dwarf # -g and -F dwarf are for debugging
 LD = ld
-LDFLAGS = 
+GCC = gcc
+LDFLAGS = -no-pie
 
 # Get all .asm files and define their resulting binary names
 SRCS = $(wildcard *.asm)
@@ -14,7 +15,7 @@ all: $(APP)
 
 # Rule to link the object file into an executable
 $(APP): $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(GCC) $(LDFLAGS) -o $@ $^
 
 # Rule to assemble .asm into .o
 %.o: %.asm
