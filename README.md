@@ -4,7 +4,7 @@ To install dependancies on linux:
 2. Install `make` and `nasm`:
 
 ```bash
-sudo apt update && sudo apt upgrade -y && sudo apt install nasm make
+sudo apt update && sudo apt upgrade -y && sudo apt install nasm make gcc
 ```
 
 For convienient build and run shortcuts create in `.vscode/` these files:
