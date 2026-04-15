@@ -4,25 +4,30 @@ ASFLAGS = -f elf64 -g -F dwarf # -g and -F dwarf are for debugging
 LD = ld
 GCC = gcc
 LDFLAGS = -no-pie
+OUTDIR = out
 
-# Get all .asm files and define their resulting binary names
+# Get all .asm files and define their resulting object names in ./out
 SRCS = $(wildcard *.asm)
-OBJS = $(SRCS:.asm=.o)
+OBJS = $(patsubst %.asm,$(OUTDIR)/%.o,$(SRCS))
 APP = app.exe
 
 # Default target: build all
 all: $(APP)
 
-# Rule to link the object file into an executable
+# Rule to link object files into an executable
 $(APP): $(OBJS)
 	$(GCC) $(LDFLAGS) -o $@ $^
 
-# Rule to assemble .asm into .o
-%.o: %.asm
+# Ensure output directory exists
+$(OUTDIR):
+	mkdir -p $(OUTDIR)
+
+# Rule to assemble .asm into ./out/*.o
+$(OUTDIR)/%.o: %.asm | $(OUTDIR)
 	$(AS) $(ASFLAGS) $< -o $@
 
 # Clean up
 clean:
-	rm -f *.o $(OBJS) $(APP)
+	rm -rf $(OUTDIR) $(APP)
 
 .PHONY: all clean
