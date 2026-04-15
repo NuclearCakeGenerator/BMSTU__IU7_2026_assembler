@@ -56,5 +56,6 @@ end_get_option_loop:
                                                     ;     return ch // via rax
     movzx rax, byte [buf]
     sub rax, '0'
+    ret
                                                     ; }
 end_get_option:

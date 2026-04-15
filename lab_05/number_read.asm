@@ -6,16 +6,16 @@ global enter_number
 
 NUMBER_BUFFER_SIZE equ 6
 
-segment .data
-    prompt db "Enter a 16 bit HEXADECIMAL number: ", CHAR_CARRIAGE_RETURN, CHAR_LINE_FEED
+section .data
+    prompt db "Enter a 16 bit SIGNED HEXADECIMAL number: ", CHAR_CARRIAGE_RETURN, CHAR_LINE_FEED
     PROMPT_LEN equ $ - prompt
-    error_msg db "Invalid input. Please enter a valid 16 bit hexadecimal number.", CHAR_CARRIAGE_RETURN, CHAR_LINE_FEED
+    error_msg db "Invalid input. Please enter a valid 16 bit signed hexadecimal number.", CHAR_CARRIAGE_RETURN, CHAR_LINE_FEED
     ERROR_MSG_LEN equ $ - error_msg
 
-segment .bss
+section .bss
     number resb 5 ; 4 for the number and 1 for the null terminator and sign
 
-segment .text
+section .text
 enter_number:
     print_string prompt, PROMPT_LEN
     read_string number, NUMBER_BUFFER_SIZE
@@ -24,7 +24,7 @@ hex_to_bin:
 ; string is at [number]
 mov al, '-'
 cmp al, [number]
-jne check_as_positive:
+jne check_as_positive
 mov rsi, 1
 jmp convert_abs
 check_as_positive:
