@@ -83,6 +83,7 @@ cmp rsi, 0
 je end_conversion
     neg rax
 end_conversion:
+    mov rbx, rax
     ret
 
 invalid_digit:
