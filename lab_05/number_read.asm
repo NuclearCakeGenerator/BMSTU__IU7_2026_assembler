@@ -4,7 +4,7 @@
 
 global enter_number
 
-NUMBER_BUFFER_SIZE equ 6
+NUMBER_BUFFER_SIZE equ 7
 
 section .data
     prompt db "Enter a 16 bit SIGNED HEXADECIMAL number: ", CHAR_CARRIAGE_RETURN, CHAR_LINE_FEED
@@ -13,29 +13,39 @@ section .data
     ERROR_MSG_LEN equ $ - error_msg
 
 section .bss
-    number resb 5 ; 4 for the number and 1 for the null terminator and sign
+    number resb NUMBER_BUFFER_SIZE ; 4 for the number and 2 for the null terminator and sign and 1 for overflow detection
 
 section .text
 enter_number:
     print_string prompt, PROMPT_LEN
     read_string number, NUMBER_BUFFER_SIZE
+    mov rcx, rax ; rax contains the number of bytes read, including the newline character
+    dec rcx  ; for correct loop iteration
 
 hex_to_bin:
 ; string is at [number]
 mov al, '-'
-cmp al, [number]
+mov ah, [number]
+cmp al, ah
 jne check_as_positive
-mov rsi, 1
-jmp convert_abs
+mov rsi, 1   ; for sign flag
+dec rcx      ; skip the '-' character
+jmp check_length
 check_as_positive:
 mov rsi, 0
 
+check_length:
+    cmp rcx, 4
+    jg invalid_digit
+
 convert_abs:
-mov rcx, 4
-xor rax, rax
+xor rax, rax ; for the resulting number
 fetch_digit:
-xor rdx, rdx
-mov dl, [number + rcx - 1]
+xor rdx, rdx  ; for fetched character
+mov dl, [number + rcx - 1 + rsi]
+
+cmp dl, 0
+je end_fetch_digits
 ;convert_digit
 cmp dl, '0'
 jl invalid_digit
@@ -65,6 +75,7 @@ append_digit:
     or rax, rdx
 
 loop fetch_digit
+end_fetch_digits:
 ; rax now contains the absolute value of the number
 ; rsi indicates if the number is negative (1) or positive (0)
 ; We can now convert it to two's complement if it's negative
