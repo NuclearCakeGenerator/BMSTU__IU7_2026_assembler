@@ -4,7 +4,7 @@ To install dependancies on linux:
 2. Install `make` and `nasm`:
 
 ```bash
-sudo apt update && sudo apt upgrade -y && sudo apt install nasm make gcc
+sudo apt update && sudo apt upgrade -y && sudo apt install nasm make gcc gdb
 ```
 
 For convienient build and run shortcuts create in `.vscode/` these files:
@@ -22,6 +22,18 @@ For convienient build and run shortcuts create in `.vscode/` these files:
       "cwd": "${fileDirname}",
       "stopOnEntry": true,
       "preLaunchTask": "build-asm"
+    },
+    {
+      "name": "Debug Assembly (GDB)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}/app.exe",
+      "cwd": "${fileDirname}",
+      "stopAtEntry": true,
+      "preLaunchTask": "build-asm",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "externalConsole": false
     }
   ]
 }
