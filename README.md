@@ -4,7 +4,7 @@ To install dependancies on linux:
 2. Install `make`, `nasm` etc:
 
 ```bash
-sudo apt update && sudo apt upgrade -y && sudo apt install -y nasm make gcc gdb
+sudo apt update && sudo apt upgrade -y && sudo apt install -y nasm make gcc gdb libgtk-3-dev
 ```
 
 For convienient build and run shortcuts create in `.vscode/` these files:
