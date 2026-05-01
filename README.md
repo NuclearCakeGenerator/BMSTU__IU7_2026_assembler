@@ -1,7 +1,7 @@
-To install dependancies on linux:
+To install dependencies on linux:
 
 1. Install `llvm-vs-code-extensions.lldb-dap` extension in VS Code.
-2. run `setup.sh` via root**
+2. run `setup.sh` via root
 
 or
 
@@ -11,7 +11,7 @@ or
 sudo apt update && sudo apt upgrade -y && sudo apt install -y nasm make gcc gdb libgtk-3-dev
 ```
 
-For convienient build and run shortcuts create in `.vscode/` these files:
+For convienient build and run shortcuts create in `.vscode/` these files (`setup.sh` can do this for you):
 
 `launch.json`
 ```
