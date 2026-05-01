@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Assembly (LLDB)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${fileDirname}/app.exe",
+      "cwd": "${fileDirname}",
+      "stopOnEntry": true,
+      "preLaunchTask": "build-asm"
+    },
+    {
+      "name": "Debug Assembly (GDB)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}/app.exe",
+      "cwd": "${fileDirname}",
+      "stopAtEntry": true,
+      "preLaunchTask": "build-asm",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "externalConsole": false
+    }
+  ]
+}

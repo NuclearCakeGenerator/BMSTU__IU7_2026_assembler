@@ -1,7 +1,11 @@
 To install dependancies on linux:
 
 1. Install `llvm-vs-code-extensions.lldb-dap` extension in VS Code.
-2. Install `make`, `nasm` etc:
+2. run `setup.sh` via root**
+
+or
+
+2. Install `make`, `nasm` etc manually:
 
 ```bash
 sudo apt update && sudo apt upgrade -y && sudo apt install -y nasm make gcc gdb libgtk-3-dev
