@@ -7,8 +7,14 @@ LDFLAGS = -no-pie
 OUTDIR = out
 
 # Get all .asm files and define their resulting object names in ./out
-SRCS = $(wildcard *.asm)
-OBJS = $(patsubst %.asm,$(OUTDIR)/%.o,$(SRCS))
+SRCS_ASM = $(wildcard *.asm)
+SRCS_C = $(wildcard *.c)
+SRCS_CPP = $(wildcard *.cpp)
+
+OBJS_ASM = $(patsubst %.asm,$(OUTDIR)/%.o,$(SRCS))
+OBJS_C = $(patsubst %.c,$(OUTDIR)/%.o,$(SRCS))
+OBJS_CPP = $(patsubst %.cpp,$(OUTDIR)/%.obj,$(SRCS))
+
 APP = app.exe
 
 # Default target: build all
