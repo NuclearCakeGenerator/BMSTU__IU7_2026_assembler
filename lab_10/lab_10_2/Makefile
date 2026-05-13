@@ -1,25 +1,24 @@
+NASM = nasm
 CC = gcc
-CFLAGS = -std=c99 -O2 -Wall -m80387 -D_GNU_SOURCE
 LDLIBS = -lm
 
 OUT_DIR = out
 
 all: run_sine
 
-$(OUT_DIR)/sine: main.c
-	$(CC) $(CFLAGS) -o $(OUT_DIR)/sine main.c $(LDLIBS)
+$(OUT_DIR)/sine: sine_nasm.asm | $(OUT_DIR)
+	$(NASM) -f elf64 -o $(OUT_DIR)/sine_nasm.o sine_nasm.asm
+	$(CC) -no-pie -o $(OUT_DIR)/sine $(OUT_DIR)/sine_nasm.o $(LDLIBS)
 
-disassemble: $(OUT_DIR)/sine
-	objdump -d $(OUT_DIR)/sine > $(OUT_DIR)/sine.asm
-
-run_sine: $(OUT_DIR)/sine disassemble
+run_sine: $(OUT_DIR)/sine
 	@echo ""
 	@echo "=========================================="
-	@echo "Sine Precision Test (x87 FLDPI)"
+	@echo "Sine Precision Test (x87 FLDPI) - NASM" 
 	@echo "=========================================="
 	@$(OUT_DIR)/sine
-	@echo ""
-	@echo "Disassembly saved to $(OUT_DIR)/sine.asm"
+
+$(OUT_DIR):
+	mkdir -p $(OUT_DIR)
 
 clean:
 	rm -rf $(OUT_DIR)/*
