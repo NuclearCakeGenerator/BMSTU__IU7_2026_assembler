@@ -1,11 +1,21 @@
-CC = gcc
-CFLAGS = -std=c11 -O2 -Wall -Wextra
-LDLIBS = -lm
+.PHONY: run_1 run_2 run_3 all clean
 
-all: app.exe
+# Default target
+all: run_3
 
-app.exe: main.c
-	$(CC) $(CFLAGS) -o app.exe main.c $(LDLIBS)
+# Subtask 1: Performance comparison (add/mul with x87 disabled/enabled, asm)
+run_1:
+	$(MAKE) -C lab_10_1 all
+
+# Subtask 2: Sine precision comparison (NASM)
+run_2:
+	$(MAKE) -C lab_10_2 all
+
+# Subtask 3: Root finding via chord method
+run_3:
+	$(MAKE) -C lab_10_3 all
 
 clean:
-	rm -f app.exe
+	$(MAKE) -C lab_10_1 clean
+	$(MAKE) -C lab_10_2 clean
+	$(MAKE) -C lab_10_3 clean
