@@ -31,7 +31,8 @@ void test_float_add() {
     }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    std::cout << "Float ADD:    " << std::setw(12) << duration << " ns" << std::endl;
+    float time = static_cast<float>(duration) / COUNT;
+    std::cout << "Float ADD:    " << std::setw(12) << time << " ns/op" << std::endl;
 }
 
 void test_float_mul() {
@@ -41,7 +42,8 @@ void test_float_mul() {
     }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    std::cout << "Float MUL:    " << std::setw(12) << duration << " ns" << std::endl;
+    float time = static_cast<float>(duration) / COUNT;
+    std::cout << "Float MUL:    " << std::setw(12) << time << " ns/op" << std::endl;
 }
 
 void test_double_add() {
@@ -51,7 +53,8 @@ void test_double_add() {
     }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    std::cout << "Double ADD:   " << std::setw(12) << duration << " ns" << std::endl;
+    double time = static_cast<double>(duration) / COUNT;
+    std::cout << "Double ADD:   " << std::setw(12) << time << " ns/op" << std::endl;
 }
 
 void test_double_mul() {
@@ -61,8 +64,8 @@ void test_double_mul() {
     }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    std::cout << "Double MUL:   " << std::setw(12) << duration << " ns" << std::endl;
-}
+    double time = static_cast<double>(duration) / COUNT;
+    std::cout << "Double MUL:   " << std::setw(12) << time << " ns/op" << std::endl;}
 
 int main() {
     init_random_data();
