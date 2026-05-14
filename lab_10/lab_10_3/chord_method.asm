@@ -63,7 +63,7 @@ main:
     push r12
     push r13
     push r14
-    sub rsp, 64
+    sub rsp, 80
     
     ; Local stack layout:
     ; [rsp]     = a
@@ -74,6 +74,8 @@ main:
     ; [rsp+40]  = result (root)
     ; [rsp+48]  = f(result)
     ; [rsp+56]  = temp
+    ; [rsp+64]  = temp2
+    ; [rsp+72]  = temp3
     
     ; Save argc and argv
     mov r12, rdi            ; argc
@@ -117,18 +119,21 @@ main:
     ; Compute fa = f(a)
     movsd xmm0, qword [rsp]
     call compute_f
-    movsd qword [rsp + 16], xmm0
+    movsd qword [rsp + 16], xmm0    ; save fa (result is in xmm0)
     
     ; Compute fb = f(b)
     movsd xmm0, qword [rsp + 8]
     call compute_f
-    movsd qword [rsp + 24], xmm0
+    movsd qword [rsp + 24], xmm0    ; save fb (result is in xmm0)
     
     ; Check sign: fa * fb > 0?
-    movsd xmm0, qword [rsp + 16]
-    movsd xmm1, qword [rsp + 24]
-    mulsd xmm0, xmm1
-    comisd xmm0, qword [rel zero]
+    fld qword [rsp + 16]            ; st0 = fa
+    fld qword [rsp + 24]            ; st0 = fb, st1 = fa
+    fmulp                           ; st0 = fa * fb
+    fld qword [rel zero]            ; st0 = 0, st1 = fa*fb
+    fcompp                          ; compare and pop both
+    fstsw ax
+    sahf
     ja .sign_error
     
     ; Chord method loop
@@ -163,7 +168,7 @@ main:
     ; Compute fx = f(x)
     movsd xmm0, qword [rsp + 56]    ; load x into xmm0
     call compute_f
-    movsd qword [rsp + 48], xmm0    ; save fx
+    movsd qword [rsp + 48], xmm0    ; save fx (result is in xmm0)
     
     ; Check if fx == 0 using x87 FPU stack (like line 144)
     fld qword [rsp + 48]            ; load fx onto x87 stack
@@ -201,25 +206,32 @@ main:
     
 .chord_done:
     ; Compute result = (a + b) / 2
-    movsd xmm0, qword [rsp]
-    addsd xmm0, qword [rsp + 8]
-    divsd xmm0, qword [rel two]
-    movsd qword [rsp + 40], xmm0
+    fld qword [rsp]                 ; st0 = a
+    fld qword [rsp + 8]             ; st0 = b, st1 = a
+    faddp                           ; st0 = a + b
+    fld qword [rel two]             ; st0 = 2, st1 = a+b
+    fdivp st1                       ; st0 = (a+b)/2
+    fstp qword [rsp + 40]           ; store result
     
     ; Compute f(result)
+    movsd xmm0, qword [rsp + 40]
     call compute_f
-    movsd qword [rsp + 48], xmm0
+    movsd qword [rsp + 48], xmm0    ; store f(result) (result is in xmm0)
     
     ; Print result: printf("Approximate root after %d iterations: %.12g\n", n_iter, result)
     lea rdi, [rel fmt_result]       ; format string in rdi
-    mov esi, r14d                   ; n_iter in esi (second positional arg goes in RSI for printf)
-    movsd xmm0, qword [rsp + 40]    ; result in xmm0
-    mov al, 1                        ; 1 XMM register used
+    mov esi, r14d                   ; n_iter in esi
+    fld qword [rsp + 40]            ; load result
+    fstp qword [rsp + 56]           ; store to stack for printf
+    movsd xmm0, qword [rsp + 56]    ; load result into xmm0 for printf
+    mov al, 1
     call printf
     
     ; Print f(result): printf("f(root) = %.12g\n", f_result)
     lea rdi, [rel fmt_fx]
-    movsd xmm0, qword [rsp + 48]
+    fld qword [rsp + 48]            ; load f(result)
+    fstp qword [rsp + 56]           ; store to stack
+    movsd xmm0, qword [rsp + 56]    ; load into xmm0 for printf
     mov al, 1
     call printf
     
@@ -227,15 +239,19 @@ main:
     jmp .exit
     
 .sign_error:
-    movsd xmm0, qword [rsp + 16]
-    movsd xmm1, qword [rsp + 24]
+    fld qword [rsp + 16]            ; load fa
+    fstp qword [rsp + 56]           ; store to temp1
+    movsd xmm0, qword [rsp + 56]    ; load into xmm0
+    fld qword [rsp + 24]            ; load fb
+    fstp qword [rsp + 64]           ; store to temp2
+    movsd xmm1, qword [rsp + 64]    ; load into xmm1
     lea rdi, [rel fmt_error]
     mov eax, 2
     call printf
     mov eax, 3
     
 .exit:
-    add rsp, 64
+    add rsp, 80
     pop r14
     pop r13
     pop r12

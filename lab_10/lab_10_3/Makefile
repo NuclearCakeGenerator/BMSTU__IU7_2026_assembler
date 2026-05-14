@@ -19,8 +19,8 @@ run_root: $(OUT_DIR)/root disassemble
 	@echo "Chord Method Root Finder (NASM)"
 	@echo "Function: f(x) = sin(x^2 + 5x)"
 	@echo "=========================================="
-	@echo "Test 1: Finding root on [-2, 1] with 30 iterations"
-	@$(OUT_DIR)/root -2 1 30
+	@echo "Test 1: Finding root on [-5, -0.5] with 30 iterations"
+	@$(OUT_DIR)/root -5 -0.5 30
 	@echo ""
 	@echo "Test 2: Finding root on [-1, 0] with 40 iterations"
 	@$(OUT_DIR)/root -1 0 40
