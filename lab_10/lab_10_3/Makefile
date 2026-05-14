@@ -1,13 +1,14 @@
+NASM = nasm
 CC = gcc
-CFLAGS = -std=c99 -O2 -Wall
 LDLIBS = -lm
 
 OUT_DIR = out
 
 all: run_root
 
-$(OUT_DIR)/root: main.c
-	$(CC) $(CFLAGS) -o $(OUT_DIR)/root main.c $(LDLIBS)
+$(OUT_DIR)/root: chord_method.asm | $(OUT_DIR)
+	$(NASM) -f elf64 -o $(OUT_DIR)/chord_method.o chord_method.asm
+	$(CC) -no-pie -o $(OUT_DIR)/root $(OUT_DIR)/chord_method.o $(LDLIBS)
 
 disassemble: $(OUT_DIR)/root
 	objdump -d $(OUT_DIR)/root > $(OUT_DIR)/root.asm
@@ -15,7 +16,7 @@ disassemble: $(OUT_DIR)/root
 run_root: $(OUT_DIR)/root disassemble
 	@echo ""
 	@echo "=========================================="
-	@echo "Chord Method Root Finder"
+	@echo "Chord Method Root Finder (NASM)"
 	@echo "Function: f(x) = sin(x^2 + 5x)"
 	@echo "=========================================="
 	@echo "Test 1: Finding root on [-2, 1] with 30 iterations"
@@ -25,6 +26,9 @@ run_root: $(OUT_DIR)/root disassemble
 	@$(OUT_DIR)/root -1 0 40
 	@echo ""
 	@echo "Disassembly saved to $(OUT_DIR)/root.asm"
+
+$(OUT_DIR):
+	mkdir -p $(OUT_DIR)
 
 clean:
 	rm -rf $(OUT_DIR)/*
