@@ -15,33 +15,44 @@ section .text
     global main
     extern printf
     extern strtod
-    extern sin
 
-; Helper: compute f(x) = sin(x^2 + 5x)
+; Helper: compute f(x) = sin(x^2 + 5x) using x87 FPU
 ; Input: xmm0 = x
 ; Output: xmm0 = f(x)
 compute_f:
     push rbp
     mov rbp, rsp
-    sub rsp, 8
+    sub rsp, 24
     
-    movsd qword [rsp], xmm0     ; save x
+    ; Save x to stack
+    movsd qword [rsp], xmm0     ; [rsp] = x
     
+    ; Use x87 FPU to compute sin(x^2 + 5x)
     ; Compute x^2
-    movsd xmm1, xmm0
-    mulsd xmm0, xmm0            ; x^2
+    fld qword [rsp]             ; st0 = x
+    fld qword [rsp]             ; st0 = x, st1 = x
+    fmul                        ; st0 = st0*st1 (result in st1), pop
+    fstp qword [rsp + 8]        ; store x^2, pop
     
     ; Compute 5*x
-    movsd xmm2, qword [rsp]     ; load x back
-    mulsd xmm2, qword [rel five] ; 5*x
+    fld qword [rel five]        ; st0 = 5
+    fld qword [rsp]             ; st0 = x, st1 = 5
+    fmul                        ; st0 = st0*st1, pop
+    fstp qword [rsp + 16]       ; store 5*x, pop
     
     ; Compute x^2 + 5x
-    addsd xmm0, xmm2
+    fld qword [rsp + 8]         ; st0 = x^2
+    fld qword [rsp + 16]        ; st0 = 5*x, st1 = x^2
+    faddp                       ; st0 = st0+st1 (add and pop)
     
-    ; Call sin()
-    call sin
+    ; Compute sine
+    fsin                        ; st0 = sin(st0)
     
-    add rsp, 8
+    ; Store result to xmm0
+    fstp qword [rsp + 8]        ; store result, pop
+    movsd xmm0, qword [rsp + 8] ; load result into xmm0
+    
+    add rsp, 24
     pop rbp
     ret
 
