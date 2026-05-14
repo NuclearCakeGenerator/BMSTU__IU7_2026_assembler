@@ -138,40 +138,39 @@ main:
     cmp ebx, r14d
     jge .chord_done
     
-    ; Load current a, b, fa, fb
-    movsd xmm2, qword [rsp]         ; a
-    movsd xmm3, qword [rsp + 8]     ; b
-    movsd xmm4, qword [rsp + 16]    ; fa
-    movsd xmm5, qword [rsp + 24]    ; fb
-    
     ; Check if fb - fa == 0
-    movsd xmm0, xmm5
-    subsd xmm0, xmm4
-    comisd xmm0, qword [rel zero]
+    fld qword [rsp + 24]            ; st0 = fb
+    fld qword [rsp + 16]            ; st0 = fa, st1 = fb
+    fcompp                          ; compare st0 and st1, pop both
+    fstsw ax
+    sahf
     je .chord_done
     
     ; Compute x = (a*fb - b*fa) / (fb - fa)
-    movsd xmm0, xmm2
-    mulsd xmm0, xmm5                ; a*fb
-    
-    movsd xmm1, xmm3
-    mulsd xmm1, xmm4                ; b*fa
-    
-    subsd xmm0, xmm1                ; a*fb - b*fa
-    
-    movsd xmm1, xmm5
-    subsd xmm1, xmm4                ; fb - fa
-    
-    divsd xmm0, xmm1                ; x
-    
-    movsd qword [rsp + 56], xmm0    ; save x temporarily
+    fld qword [rsp + 24]            ; st0 = fb
+    fld qword [rsp + 16]            ; st0 = fa, st1 = fb
+    fsubp st1                       ; st0 = fb - fa
+    fld qword [rsp + 8]             ; st0 = b, st1 = (fb - fa)
+    fld qword [rsp + 16]            ; st0 = fa, st1 = b, st2 = (fb - fa)
+    fmulp                           ; st0 = b*fa, st1 = (fb - fa)
+    fld qword [rsp]                 ; st0 = a, st1 = b*fa, st2 = (fb - fa)
+    fld qword [rsp + 24]            ; st0 = fb, st1 = a, st2 = b*fa, st3 = (fb - fa)
+    fmulp                           ; st0 = a*fb, st1 = b*fa, st2 = (fb - fa)
+    fsubrp st1                      ; st0 = a*fb - b*fa, st1 = (fb - fa)
+    fdivrp st1                      ; st0 = (a*fb - b*fa) / (fb - fa)
+    fstp qword [rsp + 56]           ; store x, pop
     
     ; Compute fx = f(x)
+    movsd xmm0, qword [rsp + 56]    ; load x into xmm0
     call compute_f
     movsd qword [rsp + 48], xmm0    ; save fx
     
-    ; Check if fx == 0
-    comisd xmm0, qword [rel zero]
+    ; Check if fx == 0 using x87 FPU stack (like line 144)
+    fld qword [rsp + 48]            ; load fx onto x87 stack
+    fld qword [rel zero]            ; load 0 onto x87 stack
+    fcompp                          ; compare st0 and st1, pop both
+    fstsw ax
+    sahf
     je .chord_done
     
     ; Load saved values
